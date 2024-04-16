@@ -1,0 +1,92 @@
+"""""
+1.Базовый класс для всех фигур:
+
+from abc import ABC, abstractmethod
+import math
+
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+
+
+"""""
+"""""
+2.Класс для круга:
+
+class Circle(Shape):
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        if self.radius <= 0:
+            raise ValueError("Радиус должен быть положительным числом")
+        return math.pi * (self.radius ** 2)
+
+
+"""""
+"""""
+3.Класс для треугольника:
+
+
+class Triangle(Shape):
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+
+    def area(self):
+        if not self.is_valid():
+            raise ValueError("Со сторонами такой длины треугольник не существует")
+        s = (self.a + self.b + self.c) / 2
+        return (s * (s - self.a) * (s - self.b) * (s - self.c)) ** 0.5
+
+    def is_valid(self):
+        return self.a + self.b > self.c and self.b + self.c > self.a and self.a + self.c > self.b
+
+    def is_right_triangle(self):
+        sides = sorted([self.a, self.b, self.c])
+        return math.isclose(sides[2] ** 2, sides[0] ** 2 + sides[1] ** 2)
+
+''''' 
+
+'''''
+
+4.Функция для вычисления площади без знания типа фигуры:
+
+def compute_area(shape):
+    if not isinstance(shape, Shape):
+        raise ValueError("Объект должен быть подклассом Shape")
+    return shape.area()
+
+'''''
+
+#5.Пример юнит - тесто с использованием библиотеки `unittest`:
+
+'''''
+import unittest
+
+
+class TestShapes(unittest.TestCase):
+    def test_circle_area(self):
+        circle = Circle(3)
+        self.assertAlmostEqual(circle.area(), 28.274333882308138)
+
+    def test_triangle_area(self):
+        triangle = Triangle(3, 4, 5)
+        self.assertEqual(triangle.area(), 6)
+
+    def test_right_triangle(self):
+        triangle = Triangle(3, 4, 5)
+        self.assertTrue(triangle.is_right_triangle())
+
+    def test_invalid_triangle(self):
+        with self.assertRaises(ValueError):
+            Triangle(1, 2, 3).area()
+
+
+if __name__ == "__main__":
+    unittest.main()
+ 
+"""
